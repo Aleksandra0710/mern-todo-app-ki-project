@@ -27,3 +27,21 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-todo-frontend:latest ./frontend
           docker push ${{ secrets.DOCKER_USERNAME }}/mern-todo-frontend:latest
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: '1.32.2'
+
+      - name: Set up kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s-manifests/namespace.yaml
+          kubectl apply -f k8s-manifests/secrets/
+          kubectl apply -f k8s-manifests/configmaps/
+          kubectl apply -f k8s-manifests/deployments/
+          kubectl apply -f k8s-manifests/services/
+          kubectl apply -f k8s-manifests/ingress/

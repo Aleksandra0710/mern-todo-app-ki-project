@@ -1,27 +1,36 @@
+version: "3.9"
+
 services:
   mongo:
     image: mongo:6
-    container_name: mongo
+    container_name: mern-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rootUser
+      MONGO_INITDB_ROOT_PASSWORD: rootPass
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
     ports:
       - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
 
   backend:
     build: ./backend
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
+    container_name: mern-backend
+    restart: unless-stopped
+    environment:
+      MONGO_URI: mongodb://mernUser:mernPass@mongo:27017/mern-todo
     depends_on:
       - mongo
-
+    ports:
+      - "8000:8001"
   frontend:
     build: ./frontend
+    container_name: mern-frontend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     depends_on:
       - backend
-
 volumes:
-  mongo_data:
+  mongo-data:
