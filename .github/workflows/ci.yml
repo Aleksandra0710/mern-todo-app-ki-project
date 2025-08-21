@@ -31,9 +31,10 @@ jobs:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
 
-      - name: Set up kubeconfig
+      - name: Prepare kube config
         run: |
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          mkdir -p $HOME/.kube
+          echo "" > $HOME/.kube/config
 
       - name: Apply Kubernetes manifests
         run: |
